@@ -215,67 +215,60 @@ const activeDeal = getActiveDeal();
                 </div>
               </div>
 </div>
+</div>
             
             {/* Stock Status Badges */}
-            <>
-              {product.stock <= 10 && product.stock > 0 && (
-                <Badge 
-                  variant="warning" 
-                  className="absolute top-4 left-4"
-                >
-                  Low Stock
-                </Badge>
-              )}
-              
-              {product.stock === 0 && (
-                <Badge 
-                  variant="danger" 
-                  className="absolute top-4 left-4"
-                >
-                  Out of Stock
-                </Badge>
-              )}
-            </>
+            {product.stock <= 10 && product.stock > 0 && (
+              <Badge 
+                variant="warning" 
+                className="absolute top-4 left-4"
+              >
+                Low Stock
+              </Badge>
+            )}
             
-            {/* Price Change Badge */}
-            <>
-              {priceChange && (
-                <Badge 
-                  variant={priceChange > 0 ? 'danger' : 'sale'} 
-                  className="absolute top-4 right-4 text-sm font-bold shadow-lg"
-                >
-                  {priceChange > 0 ? 'PRICE UP' : 'SALE'} {Math.abs(priceChange).toFixed(1)}% OFF
-                </Badge>
-              )}
-            </>
+            {product.stock === 0 && (
+              <Badge 
+                variant="danger" 
+                className="absolute top-4 left-4"
+              >
+                Out of Stock
+              </Badge>
+            )}
             
-            {/* Auto-Generated Offer Badge */}
-            <>
-              {product.discountValue && product.discountValue > 0 && (
-                <Badge 
-                  variant="promotional" 
-                  className="absolute top-4 left-4 text-sm font-bold"
-                >
-                  {product.discountType === 'Percentage' 
-                    ? `${product.discountValue}% OFF` 
-                    : `Rs. ${product.discountValue} OFF`
-                  }
-                </Badge>
-              )}
-            </>
+{/* Price Change Badge */}
+            {priceChange && (
+              <Badge 
+                variant={priceChange > 0 ? 'danger' : 'sale'} 
+                className="absolute top-4 right-4 text-sm font-bold shadow-lg"
+              >
+                {priceChange > 0 ? 'PRICE UP' : 'SALE'} {Math.abs(priceChange).toFixed(1)}% OFF
+              </Badge>
+            )}
+            
+{/* Auto-Generated Offer Badge */}
+            {product.discountValue && product.discountValue > 0 && (
+              <Badge 
+                variant="promotional" 
+                className="absolute top-4 left-4 text-sm font-bold"
+              >
+                {product.discountType === 'Percentage' 
+                  ? `${product.discountValue}% OFF` 
+                  : `Rs. ${product.discountValue} OFF`
+                }
+              </Badge>
+            )}
 
-            {/* Special Deal Badge */}
-            <>
-              {activeDeal && (
-                <Badge 
-                  variant={activeDeal.color} 
-                  className="absolute bottom-4 left-4 text-sm font-bold animate-pulse shadow-lg"
-                >
-                  <ApperIcon name={activeDeal.icon} size={14} className="mr-1" />
-                  {activeDeal.title}
-                </Badge>
-              )}
-            </>
+{/* Special Deal Badge */}
+            {activeDeal && (
+              <Badge 
+                variant={activeDeal.color} 
+                className="absolute bottom-4 left-4 text-sm font-bold animate-pulse shadow-lg"
+              >
+                <ApperIcon name={activeDeal.icon} size={14} className="mr-1" />
+                {activeDeal.title}
+              </Badge>
+            )}
           </div>
         </div>
 
@@ -536,15 +529,14 @@ Add to Cart - Rs. {((product.price * quantity) - calculateDealSavings(quantity))
               <div>
                 <p className="font-medium text-gray-900">Easy Returns</p>
                 <p className="text-sm text-gray-600">Hassle-free policy</p>
-              </div>
-            </div>
 </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
-
 // Enhanced Discount Section Component with Offer Dropdown
 const DiscountSection = ({ product, quantity, onDiscountChange }) => {
   const [selectedOffer, setSelectedOffer] = useState(null);
