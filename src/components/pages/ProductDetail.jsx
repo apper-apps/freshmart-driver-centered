@@ -217,8 +217,7 @@ return (
                 </div>
               </div>
             </div>
-              
-              {/* Stock Status Badges */}
+{/* Stock Status Badges */}
               {product.stock <= 10 && product.stock > 0 && (
                 <Badge 
                   variant="warning" 
@@ -235,7 +234,7 @@ return (
                 >
                   Out of Stock
                 </Badge>
-)}
+              )}
               
               {/* Price Change Badge */}
               {priceChange && (
@@ -530,15 +529,15 @@ return (
                 <div>
                   <p className="font-medium text-gray-900">Easy Returns</p>
                   <p className="text-sm text-gray-600">Hassle-free policy</p>
+<p className="text-sm text-gray-600">Hassle-free policy</p>
                 </div>
               </div>
-</div>
+            </div>
           </div>
         </div>
       </div>
     </>
   );
-};
 // Enhanced Discount Section Component with Offer Dropdown
 // Enhanced Discount Section Component with Offer Dropdown
 const DiscountSection = ({ product, quantity, onDiscountChange }) => {
