@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ApperIcon from "@/components/ApperIcon";
 import Badge from "@/components/atoms/Badge";
@@ -10,6 +11,7 @@ import Loading from "@/components/ui/Loading";
 import { productService } from "@/services/api/productService";
 
 const BulkPriceUpdate = () => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -198,10 +200,10 @@ const BulkPriceUpdate = () => {
           <Badge variant="info" className="text-sm">
             {filteredProducts.length} products
 </Badge>
-          <Button
+<Button
             variant="outline"
             icon="ArrowLeft"
-            onClick={() => window.history.back()}
+            onClick={() => navigate('/admin/products')}
           >
             Back to Products
           </Button>
