@@ -666,6 +666,14 @@ return matchesSearch && matchesCategory;
               >
                 Customer Preview
               </Button>
+<Button
+                variant="outline"
+                icon="Search"
+                onClick={() => window.location.href = '/admin/bulk-price-update'}
+                className="text-blue-600 border-blue-200 hover:bg-blue-50"
+              >
+                Bulk Price Manager
+              </Button>
               <Button
                 variant="secondary"
                 icon="DollarSign"

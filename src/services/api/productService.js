@@ -7,9 +7,22 @@ class ProductService {
     this.products = [...productsData];
   }
 
-async getAll(userRole = 'customer') {
+async getAll(userRole = 'customer', searchParams = {}) {
     await this.delay();
-    const products = [...this.products];
+    let products = [...this.products];
+    
+    // Apply search filter if provided
+    if (searchParams.search) {
+      const searchLower = searchParams.search.toLowerCase();
+      products = products.filter(product => {
+        return (
+          (product.name && product.name.toLowerCase().includes(searchLower)) ||
+          (product.sku && product.sku.toLowerCase().includes(searchLower)) ||
+          (product.barcode && product.barcode.toLowerCase().includes(searchLower)) ||
+          (product.category && product.category.toLowerCase().includes(searchLower))
+        );
+      });
+    }
     
     // Filter financial data for non-admin users
     if (userRole !== 'admin') {
@@ -70,7 +83,7 @@ async getById(id, userRole = 'customer') {
     return { ...newProduct };
   }
 
-  async update(id, productData) {
+async update(id, productData) {
     await this.delay();
     
     const index = this.products.findIndex(p => p.id === parseInt(id));
@@ -85,6 +98,18 @@ async getById(id, userRole = 'customer') {
 
     if (productData.stock !== undefined && productData.stock < 0) {
       throw new Error('Stock cannot be negative');
+    }
+
+    // Enhanced validation for price updates
+    if (productData.price !== undefined && productData.purchasePrice !== undefined) {
+      if (productData.price <= productData.purchasePrice) {
+        throw new Error('Selling price must be greater than purchase price');
+      }
+    }
+
+    // If only updating price, preserve the previous price for history
+    if (productData.price !== undefined && productData.price !== this.products[index].price) {
+      productData.previousPrice = this.products[index].price;
     }
 
     // Preserve existing ID

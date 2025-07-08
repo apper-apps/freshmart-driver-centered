@@ -13,6 +13,8 @@ const Input = ({
   disabled = false,
   className = '',
   showCopyButton = false,
+  showClearButton = false,
+  onClear,
   onCopySuccess,
   onCopyError,
   ...props
@@ -58,7 +60,7 @@ const inputClasses = `
     input-field
     ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}
     ${icon ? 'pl-10' : ''}
-    ${showCopyButton ? 'pr-10' : ''}
+    ${showCopyButton || showClearButton ? 'pr-10' : ''}
     ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}
     ${className}
   `.trim();
@@ -72,13 +74,13 @@ const inputClasses = `
         </label>
       )}
       
-      <div className="relative">
+<div className="relative">
         {icon && (
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <ApperIcon name={icon} size={20} className="text-gray-400" />
           </div>
         )}
-<input
+        <input
           type={type}
           value={value}
           onChange={onChange}
@@ -88,6 +90,20 @@ const inputClasses = `
           {...props}
         />
         
+        {showClearButton && value && (
+          <button
+            type="button"
+            onClick={onClear}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center hover:bg-gray-50 rounded-r-lg transition-colors duration-200"
+            title="Clear search"
+          >
+            <ApperIcon 
+              name="X" 
+              size={16} 
+              className="text-gray-400 hover:text-gray-600 transition-colors duration-200" 
+            />
+          </button>
+        )}
         {showCopyButton && value && (
           <button
             type="button"
