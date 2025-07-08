@@ -543,6 +543,7 @@ return (
     </>
   );
 };
+
 // Enhanced Discount Section Component with Offer Dropdown
 // Enhanced Discount Section Component with Offer Dropdown
 const DiscountSection = ({ product, quantity, onDiscountChange }) => {
