@@ -1711,12 +1711,13 @@ return matchesSearch && matchesCategory;
 // Enhanced Bulk Actions Modal with Category Discounts and Validation
 const EnhancedBulkActionsModal = ({ products, categories, onUpdate, onClose }) => {
   const [activeTab, setActiveTab] = useState('pricing'); // pricing, discounts, validation
-  const [updateData, setUpdateData] = useState({
-value: '',
-    minPrice: '',
+const [updateData, setUpdateData] = useState({
+    strategy: 'percentage',
+    value: '',
     minPrice: '',
     maxPrice: '',
     category: 'all',
+    applyTo: 'basePrice',
     applyToLowStock: false,
     stockThreshold: 10,
     // Enhanced discount options
@@ -1993,154 +1994,121 @@ value: '',
           {/* Price Updates Tab */}
           {activeTab === 'pricing' && (
             <div className="space-y-6">
-              {/* Enhanced Strategy Selection with Descriptions */}
+{/* 1. Update Strategy */}
               <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200">
                 <div className="flex items-center space-x-2 mb-4">
                   <ApperIcon name="Settings" size={20} className="text-blue-600" />
-                  <h4 className="font-medium text-gray-900">Strategy Selection</h4>
-                  <Badge variant="info" className="text-xs">Phase 1 MVP</Badge>
+                  <h4 className="font-medium text-gray-900">1. Update Strategy</h4>
+                  <Badge variant="info" className="text-xs">Choose Method</Badge>
                 </div>
                 
-                <div className="space-y-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Choose Update Strategy
-                  </label>
-                  
-                  <div className="space-y-3">
-                    <div 
-                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                        updateData.strategy === 'percentage' 
-                          ? 'border-blue-500 bg-blue-50' 
-                          : 'border-gray-200 hover:border-blue-300'
-                      }`}
-                      onClick={() => handleInputChange({ target: { name: 'strategy', value: 'percentage' } })}
-                    >
-                      <div className="flex items-start space-x-3">
-                        <input
-                          type="radio"
-                          name="strategy"
-                          value="percentage"
-                          checked={updateData.strategy === 'percentage'}
-                          onChange={handleInputChange}
-                          className="mt-1 text-primary focus:ring-primary"
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2">
-                            <ApperIcon name="Percent" size={16} className="text-blue-600" />
-                            <label className="font-medium text-gray-900 cursor-pointer">Percentage Change</label>
-                          </div>
-                          <p className="text-sm text-gray-600 mt-1">
-                            Increase or decrease prices by a percentage (+/- % with number input)
-                          </p>
-                        </div>
+                <div className="space-y-3">
+                  <div className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-blue-50 transition-colors">
+                    <input
+                      type="radio"
+                      name="strategy"
+                      value="percentage"
+                      checked={updateData.strategy === 'percentage'}
+                      onChange={handleInputChange}
+                      className="text-primary focus:ring-primary"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <ApperIcon name="Percent" size={16} className="text-blue-600" />
+                        <label className="font-medium text-gray-900 cursor-pointer">Percentage: +/- %</label>
                       </div>
+                      <p className="text-xs text-gray-600">Increase/decrease by percentage</p>
                     </div>
+                  </div>
 
-                    <div 
-                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                        updateData.strategy === 'fixed' 
-                          ? 'border-blue-500 bg-blue-50' 
-                          : 'border-gray-200 hover:border-blue-300'
-                      }`}
-                      onClick={() => handleInputChange({ target: { name: 'strategy', value: 'fixed' } })}
-                    >
-                      <div className="flex items-start space-x-3">
-                        <input
-                          type="radio"
-                          name="strategy"
-                          value="fixed"
-                          checked={updateData.strategy === 'fixed'}
-                          onChange={handleInputChange}
-                          className="mt-1 text-primary focus:ring-primary"
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2">
-                            <ApperIcon name="DollarSign" size={16} className="text-green-600" />
-                            <label className="font-medium text-gray-900 cursor-pointer">Fixed Amount</label>
-                          </div>
-                          <p className="text-sm text-gray-600 mt-1">
-                            Add or subtract a fixed amount (+/- Rs. with input)
-                          </p>
-                        </div>
+                  <div className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-blue-50 transition-colors">
+                    <input
+                      type="radio"
+                      name="strategy"
+                      value="fixed"
+                      checked={updateData.strategy === 'fixed'}
+                      onChange={handleInputChange}
+                      className="text-primary focus:ring-primary"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <ApperIcon name="DollarSign" size={16} className="text-green-600" />
+                        <label className="font-medium text-gray-900 cursor-pointer">Fixed: +/- Rs.</label>
                       </div>
+                      <p className="text-xs text-gray-600">Add/subtract fixed amount</p>
                     </div>
+                  </div>
 
-                    <div 
-                      className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                        updateData.strategy === 'range' 
-                          ? 'border-blue-500 bg-blue-50' 
-                          : 'border-gray-200 hover:border-blue-300'
-                      }`}
-                      onClick={() => handleInputChange({ target: { name: 'strategy', value: 'range' } })}
-                    >
-                      <div className="flex items-start space-x-3">
-                        <input
-                          type="radio"
-                          name="strategy"
-                          value="range"
-                          checked={updateData.strategy === 'range'}
-                          onChange={handleInputChange}
-                          className="mt-1 text-primary focus:ring-primary"
-                        />
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2">
-                            <ApperIcon name="BarChart3" size={16} className="text-purple-600" />
-                            <label className="font-medium text-gray-900 cursor-pointer">Price Range</label>
-                          </div>
-                          <p className="text-sm text-gray-600 mt-1">
-                            Set minimum and maximum price limits (Min/Max Rs. inputs)
-                          </p>
-                        </div>
+                  <div className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-blue-50 transition-colors">
+                    <input
+                      type="radio"
+                      name="strategy"
+                      value="range"
+                      checked={updateData.strategy === 'range'}
+                      onChange={handleInputChange}
+                      className="text-primary focus:ring-primary"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <ApperIcon name="BarChart3" size={16} className="text-purple-600" />
+                        <label className="font-medium text-gray-900 cursor-pointer">Range: Min-Max Rs.</label>
                       </div>
+                      <p className="text-xs text-gray-600">Set price boundaries</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Apply To Selection */}
+{/* 2. Apply To */}
               <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-lg border border-green-200">
                 <div className="flex items-center space-x-2 mb-4">
                   <ApperIcon name="Target" size={20} className="text-green-600" />
-                  <h4 className="font-medium text-gray-900">Apply To</h4>
+                  <h4 className="font-medium text-gray-900">2. Apply To</h4>
                 </div>
                 
-                <div className="flex items-center space-x-6">
-                  <div 
-                    className={`flex items-center space-x-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                      updateData.applyTo === 'basePrice' || !updateData.applyTo
-                        ? 'border-green-500 bg-green-50' 
-                        : 'border-gray-200 hover:border-green-300'
-                    }`}
-                    onClick={() => handleInputChange({ target: { name: 'applyTo', value: 'basePrice' } })}
-                  >
-                    <input
-                      type="radio"
-                      name="applyTo"
-                      value="basePrice"
-                      checked={updateData.applyTo === 'basePrice' || !updateData.applyTo}
-                      onChange={handleInputChange}
-                      className="text-green-600 focus:ring-green-500"
-                    />
-                    <label className="font-medium text-gray-900 cursor-pointer">Base Price</label>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <label className="flex items-center space-x-3 p-3 rounded-lg border cursor-pointer hover:bg-green-50 transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={updateData.applyTo === 'basePrice' || !updateData.applyTo}
+                        onChange={() => handleInputChange({ target: { name: 'applyTo', value: 'basePrice' } })}
+                        className="rounded text-green-600 focus:ring-green-500"
+                      />
+                      <span className="font-medium text-gray-900">Base Price ☑️</span>
+                    </label>
+                    
+                    <label className="flex items-center space-x-3 p-3 rounded-lg border cursor-pointer hover:bg-green-50 transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={updateData.applyTo === 'costPrice'}
+                        onChange={() => handleInputChange({ target: { name: 'applyTo', value: 'costPrice' } })}
+                        className="rounded text-green-600 focus:ring-green-500"
+                      />
+                      <span className="font-medium text-gray-900">Cost Price ☑️</span>
+                    </label>
                   </div>
                   
-                  <div 
-                    className={`flex items-center space-x-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                      updateData.applyTo === 'costPrice'
-                        ? 'border-green-500 bg-green-50' 
-                        : 'border-gray-200 hover:border-green-300'
-                    }`}
-                    onClick={() => handleInputChange({ target: { name: 'applyTo', value: 'costPrice' } })}
-                  >
-                    <input
-                      type="radio"
-                      name="applyTo"
-                      value="costPrice"
-                      checked={updateData.applyTo === 'costPrice'}
-                      onChange={handleInputChange}
-                      className="text-green-600 focus:ring-green-500"
-                    />
-                    <label className="font-medium text-gray-900 cursor-pointer">Cost Price</label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <label className="flex items-center space-x-3 p-3 rounded-lg border cursor-pointer hover:bg-green-50 transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={updateData.applyTo === 'selected'}
+                        onChange={() => handleInputChange({ target: { name: 'applyTo', value: 'selected' } })}
+                        className="rounded text-green-600 focus:ring-green-500"
+                      />
+                      <span className="font-medium text-gray-900">Selected Rows ☑️</span>
+                    </label>
+                    
+                    <label className="flex items-center space-x-3 p-3 rounded-lg border cursor-pointer hover:bg-green-50 transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={updateData.applyTo === 'filtered'}
+                        onChange={() => handleInputChange({ target: { name: 'applyTo', value: 'filtered' } })}
+                        className="rounded text-green-600 focus:ring-green-500"
+                      />
+                      <span className="font-medium text-gray-900">Filtered Products ☑️</span>
+                    </label>
                   </div>
                 </div>
               </div>
@@ -2207,51 +2175,55 @@ value: '',
                 )}
               </div>
 
-              {/* Enhanced Price Guards */}
+{/* 3. Price Guards */}
               <div className="bg-gradient-to-br from-yellow-50 to-amber-50 p-6 rounded-lg border border-yellow-200">
                 <h4 className="font-medium text-gray-900 mb-3 flex items-center space-x-2">
                   <ApperIcon name="Shield" size={16} className="text-yellow-600" />
-                  <span>Price Guards</span>
-                  <Badge variant="warning" className="text-xs">Rs. 1 - 100,000</Badge>
+                  <span>3. Price Guards</span>
                 </h4>
-                <p className="text-sm text-gray-600 mb-4">
-                  Enforce minimum and maximum price limits to ensure all prices stay within acceptable range
-                </p>
                 
-                {updateData.strategy !== 'range' && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Input
-                      label="Minimum Price Limit (Rs.)"
-                      name="minPrice"
-                      type="number"
-                      step="0.01"
-                      min="1"
-                      max="100000"
-                      value={updateData.minPrice}
-                      onChange={handleInputChange}
-                      placeholder="1"
-                      icon="TrendingDown"
-                    />
-                    <Input
-                      label="Maximum Price Limit (Rs.)"
-                      name="maxPrice"
-                      type="number"
-                      step="0.01"
-                      min="1"
-                      max="100000"
-                      value={updateData.maxPrice}
-                      onChange={handleInputChange}
-                      placeholder="100000"
-                      icon="TrendingUp"
-                    />
+                <div className="space-y-3">
+                  <div className="bg-white p-3 rounded-lg border border-yellow-200">
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Min:</span>
+                        <span className="font-medium text-gray-900">Rs. 1 {updateData.strategy === 'range' ? '(disabled)' : ''}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Max:</span>
+                        <span className="font-medium text-gray-900">Rs. 100,000</span>
+                      </div>
+                    </div>
                   </div>
-                )}
-                
-                <div className="mt-4 p-3 bg-white rounded-lg border border-yellow-300">
-                  <div className="flex items-center space-x-2 text-sm text-gray-700">
-                    <ApperIcon name="Info" size={14} className="text-yellow-600" />
-                    <span>All prices will be automatically constrained between Rs. 1 and Rs. 100,000</span>
-                  </div>
+                  
+                  {updateData.strategy !== 'range' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <Input
+                        label="Custom Min (Rs.)"
+                        name="minPrice"
+                        type="number"
+                        step="0.01"
+                        min="1"
+                        max="100000"
+                        value={updateData.minPrice}
+                        onChange={handleInputChange}
+                        placeholder="1"
+                        className="text-sm"
+                      />
+                      <Input
+                        label="Custom Max (Rs.)"
+                        name="maxPrice"
+                        type="number"
+                        step="0.01"
+                        min="1"
+                        max="100000"
+                        value={updateData.maxPrice}
+                        onChange={handleInputChange}
+                        placeholder="100000"
+                        className="text-sm"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -2505,9 +2477,15 @@ value: '',
               )}
             </div>
           </div>
-{/* Enhanced Preview Button */}
+{/* 4. Preview Button */}
           {activeTab !== 'validation' && (
-            <div className="flex justify-center">
+            <div className="bg-gradient-to-br from-purple-50 to-blue-50 p-6 rounded-lg border border-purple-200">
+              <div className="flex items-center space-x-2 mb-4">
+                <ApperIcon name="Eye" size={20} className="text-purple-600" />
+                <h4 className="font-medium text-gray-900">4. Preview Button</h4>
+                <Badge variant="info" className="text-xs">Simulate Changes</Badge>
+              </div>
+              
               <Button
                 type="button"
                 variant="secondary"
@@ -2517,14 +2495,14 @@ value: '',
                   (activeTab === 'pricing' && !updateData.value && updateData.strategy !== 'range') ||
                   (activeTab === 'discounts' && updateData.categoryDiscount && !updateData.discountValue)
                 }
-                className="min-w-48"
+                className="w-full"
               >
-                Preview Changes
+                Simulates changes without saving
               </Button>
             </div>
           )}
 
-          {/* Enhanced Preview Results with New Prices Columns */}
+{/* Preview Changes with Highlighting */}
           {showPreview && preview.length > 0 && (
             <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6 border border-gray-200">
               <div className="flex items-center justify-between mb-4">
@@ -2532,7 +2510,10 @@ value: '',
                   <ApperIcon name="Eye" size={16} />
                   <span>Preview Mode: {preview.length} products will be updated</span>
                 </h3>
-                <Badge variant="info" className="text-xs">Live Calculations</Badge>
+                <div className="flex items-center space-x-2">
+                  <Badge variant="success" className="text-xs">Green = Price ↑</Badge>
+                  <Badge variant="error" className="text-xs">Red = Price ↓</Badge>
+                </div>
               </div>
               
               <div className="max-h-80 overflow-y-auto">
@@ -2550,51 +2531,68 @@ value: '',
                           New Price
                         </th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Change
+                          Delta Badge
                         </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {preview.slice(0, 10).map((product) => (
-                        <tr key={product.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-3">
-                            <div className="flex items-center space-x-3">
-                              <img
-                                src={product.imageUrl || "/api/placeholder/32/32"}
-                                alt={product.name || "Product"}
-                                className="w-8 h-8 rounded object-cover"
-                                onError={(e) => {
-                                  e.target.src = "/api/placeholder/32/32";
-                                }}
-                              />
-                              <div>
-                                <p className="text-sm font-medium text-gray-900">{product.name || "Unnamed Product"}</p>
-                                <p className="text-xs text-gray-500">{product.category || "No Category"}</p>
+                      {preview.slice(0, 10).map((product) => {
+                        const priceChange = (product.priceChange || 0);
+                        const originalPrice = product.price || 0;
+                        const changePercentage = originalPrice > 0 ? ((priceChange / originalPrice) * 100) : 0;
+                        const isIncrease = priceChange >= 0;
+                        
+                        return (
+                          <tr 
+                            key={product.id} 
+                            className={`hover:bg-gray-50 transition-colors ${
+                              isIncrease ? 'bg-green-50 border-l-4 border-green-500' : 'bg-red-50 border-l-4 border-red-500'
+                            }`}
+                          >
+                            <td className="px-4 py-3">
+                              <div className="flex items-center space-x-3">
+                                <img
+                                  src={product.imageUrl || "/api/placeholder/32/32"}
+                                  alt={product.name || "Product"}
+                                  className="w-8 h-8 rounded object-cover"
+                                  onError={(e) => {
+                                    e.target.src = "/api/placeholder/32/32";
+                                  }}
+                                />
+                                <div>
+                                  <p className="text-sm font-medium text-gray-900">{product.name || "Unnamed Product"}</p>
+                                  <p className="text-xs text-gray-500">{product.category || "No Category"}</p>
+                                </div>
                               </div>
-                            </div>
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className="text-sm text-gray-900">Rs. {product.price || 0}</span>
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className="text-sm font-medium text-gray-900">
-                              Rs. {product.newPrice || 0}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center space-x-2">
-                              <ApperIcon 
-                                name={(product.priceChange || 0) >= 0 ? "TrendingUp" : "TrendingDown"} 
-                                size={12} 
-                                className={(product.priceChange || 0) >= 0 ? "text-green-600" : "text-red-600"}
-                              />
-                              <span className={`text-sm font-medium ${(product.priceChange || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                {(product.priceChange || 0) >= 0 ? '+' : ''}Rs. {product.priceChange || 0}
+                            </td>
+                            <td className="px-4 py-3">
+                              <span className="text-sm text-gray-900">Rs. {originalPrice}</span>
+                            </td>
+                            <td className="px-4 py-3">
+                              <span className={`text-sm font-medium ${
+                                isIncrease ? 'text-green-700' : 'text-red-700'
+                              }`}>
+                                Rs. {product.newPrice || 0}
                               </span>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center space-x-2">
+                                <ApperIcon 
+                                  name={isIncrease ? "TrendingUp" : "TrendingDown"} 
+                                  size={12} 
+                                  className={isIncrease ? "text-green-600" : "text-red-600"}
+                                />
+                                <Badge 
+                                  variant={isIncrease ? "success" : "error"} 
+                                  className="text-xs font-bold"
+                                >
+                                  {isIncrease ? '+' : ''}Rs.{Math.abs(priceChange).toFixed(2)} ({Math.abs(changePercentage).toFixed(1)}%)
+                                </Badge>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                   

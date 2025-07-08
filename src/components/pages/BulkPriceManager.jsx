@@ -8,6 +8,7 @@ import Input from "@/components/atoms/Input";
 import Empty from "@/components/ui/Empty";
 import Error from "@/components/ui/Error";
 import Loading from "@/components/ui/Loading";
+import Category from "@/components/pages/Category";
 import { productService } from "@/services/api/productService";
 
 const BulkPriceManager = () => {
@@ -856,7 +857,8 @@ const BulkPriceManager = () => {
             </div>
           </div>
 
-          {/* Bulk Preview */}
+{/* Bulk Preview */}
+          {/* Enhanced Bulk Preview with Change Highlighting */}
           {showBulkPreview && bulkPreview.length > 0 && (
             <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6 border border-gray-200">
               <div className="flex items-center justify-between mb-4">
@@ -864,18 +866,24 @@ const BulkPriceManager = () => {
                   <ApperIcon name="Eye" size={16} />
                   <span>Bulk Update Preview: {bulkPreview.length} products</span>
                 </h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  icon="X"
-                  onClick={() => {
-                    setBulkPreview([]);
-                    setShowBulkPreview(false);
-                  }}
-                  className="text-gray-500"
-                >
-                  Close
-                </Button>
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <Badge variant="success" className="text-xs">Green = Price ↑</Badge>
+                    <Badge variant="error" className="text-xs">Red = Price ↓</Badge>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon="X"
+                    onClick={() => {
+                      setBulkPreview([]);
+                      setShowBulkPreview(false);
+                    }}
+                    className="text-gray-500"
+                  >
+                    Close
+                  </Button>
+                </div>
               </div>
               
               <div className="max-h-80 overflow-y-auto">
@@ -886,48 +894,67 @@ const BulkPriceManager = () => {
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Current Price</th>
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">New Price</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Change</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Delta Badge</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {bulkPreview.slice(0, 10).map((product) => (
-                        <tr key={product.id} className="hover:bg-gray-50">
-                          <td className="px-4 py-3">
-                            <div className="flex items-center space-x-3">
-                              <img
-                                src={product.imageUrl || "/api/placeholder/32/32"}
-                                alt={product.name || "Product"}
-                                className="w-8 h-8 rounded object-cover"
-                                onError={(e) => {
-                                  e.target.src = "/api/placeholder/32/32";
-                                }}
-                              />
-                              <div>
-                                <p className="text-sm font-medium text-gray-900">{product.name || "Unnamed Product"}</p>
-                                <p className="text-xs text-gray-500">{product.category || "No Category"}</p>
+                      {bulkPreview.slice(0, 10).map((product) => {
+                        const priceChange = (product.priceChange || 0);
+                        const originalPrice = product.price || 0;
+                        const changePercentage = originalPrice > 0 ? ((priceChange / originalPrice) * 100) : 0;
+                        const isIncrease = priceChange >= 0;
+                        
+                        return (
+                          <tr 
+                            key={product.id} 
+                            className={`hover:bg-gray-50 transition-colors ${
+                              isIncrease ? 'bg-green-50 border-l-4 border-green-500' : 'bg-red-50 border-l-4 border-red-500'
+                            }`}
+                          >
+                            <td className="px-4 py-3">
+                              <div className="flex items-center space-x-3">
+                                <img
+                                  src={product.imageUrl || "/api/placeholder/32/32"}
+                                  alt={product.name || "Product"}
+                                  className="w-8 h-8 rounded object-cover"
+                                  onError={(e) => {
+                                    e.target.src = "/api/placeholder/32/32";
+                                  }}
+                                />
+                                <div>
+                                  <p className="text-sm font-medium text-gray-900">{product.name || "Unnamed Product"}</p>
+                                  <p className="text-xs text-gray-500">{product.category || "No Category"}</p>
+                                </div>
                               </div>
-                            </div>
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className="text-sm text-gray-900">Rs. {product.price || 0}</span>
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className="text-sm font-medium text-gray-900">Rs. {product.newPrice || 0}</span>
-                          </td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center space-x-2">
-                              <ApperIcon 
-                                name={(product.priceChange || 0) >= 0 ? "TrendingUp" : "TrendingDown"} 
-                                size={12} 
-                                className={(product.priceChange || 0) >= 0 ? "text-green-600" : "text-red-600"}
-                              />
-                              <span className={`text-sm font-medium ${(product.priceChange || 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                {(product.priceChange || 0) >= 0 ? '+' : ''}Rs. {product.priceChange || 0}
+                            </td>
+                            <td className="px-4 py-3">
+                              <span className="text-sm text-gray-900">Rs. {originalPrice}</span>
+                            </td>
+                            <td className="px-4 py-3">
+                              <span className={`text-sm font-medium ${
+                                isIncrease ? 'text-green-700' : 'text-red-700'
+                              }`}>
+                                Rs. {product.newPrice || 0}
                               </span>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center space-x-2">
+                                <ApperIcon 
+                                  name={isIncrease ? "TrendingUp" : "TrendingDown"} 
+                                  size={12} 
+                                  className={isIncrease ? "text-green-600" : "text-red-600"}
+                                />
+                                <Badge 
+                                  variant={isIncrease ? "success" : "error"} 
+                                  className="text-xs font-bold"
+                                >
+                                  {isIncrease ? '+' : ''}Rs.{Math.abs(priceChange).toFixed(2)} ({Math.abs(changePercentage).toFixed(1)}%)
+                                </Badge>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                   
