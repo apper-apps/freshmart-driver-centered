@@ -1,7 +1,4 @@
-import React from "react";
-import Error from "@/components/ui/Error";
 import productsData from "@/services/mockData/products.json";
-
 class ProductService {
   constructor() {
     this.products = [...productsData];
