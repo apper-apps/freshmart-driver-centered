@@ -525,17 +525,14 @@ Add to Cart - Rs. {((product.price * quantity) - calculateDealSavings(quantity))
               </div>
             </div>
             
-            <div className="flex items-center space-x-3">
+<div className="flex items-center space-x-3">
               <div className="bg-orange-100 p-2 rounded-lg">
-                <ApperIcon name="RotateCcw" size={20} className="text-orange-600" />
-              </div>
-<div className="bg-orange-100 p-2 rounded-lg">
                 <ApperIcon name="RotateCcw" size={20} className="text-orange-600" />
               </div>
               <div>
                 <p className="font-medium text-gray-900">Easy Returns</p>
                 <p className="text-sm text-gray-600">Hassle-free policy</p>
-              </div>
+</div>
             </div>
           </div>
         </div>
