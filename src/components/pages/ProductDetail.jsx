@@ -532,8 +532,8 @@ Add to Cart - Rs. {((product.price * quantity) - calculateDealSavings(quantity))
               <div>
                 <p className="font-medium text-gray-900">Easy Returns</p>
                 <p className="text-sm text-gray-600">Hassle-free policy</p>
+              </div>
 </div>
-            </div>
           </div>
         </div>
       </div>
