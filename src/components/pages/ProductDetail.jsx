@@ -214,57 +214,68 @@ const activeDeal = getActiveDeal();
                   <span className="text-xs font-medium text-gray-700">1:1 Frame</span>
                 </div>
               </div>
-            </div>
-            {product.stock <= 10 && product.stock > 0 && (
-              <Badge 
-                variant="warning" 
-                className="absolute top-4 left-4"
-              >
-                Low Stock
-              </Badge>
-            )}
+</div>
             
-            {product.stock === 0 && (
-              <Badge 
-                variant="danger" 
-                className="absolute top-4 left-4"
-              >
-                Out of Stock
-              </Badge>
-            )}
+            {/* Stock Status Badges */}
+            <>
+              {product.stock <= 10 && product.stock > 0 && (
+                <Badge 
+                  variant="warning" 
+                  className="absolute top-4 left-4"
+                >
+                  Low Stock
+                </Badge>
+              )}
+              
+              {product.stock === 0 && (
+                <Badge 
+                  variant="danger" 
+                  className="absolute top-4 left-4"
+                >
+                  Out of Stock
+                </Badge>
+              )}
+            </>
             
-{priceChange && (
-              <Badge 
-                variant={priceChange > 0 ? 'danger' : 'sale'} 
-                className="absolute top-4 right-4 text-sm font-bold shadow-lg"
-              >
-                {priceChange > 0 ? 'PRICE UP' : 'SALE'} {Math.abs(priceChange).toFixed(1)}% OFF
-              </Badge>
-            )}
+            {/* Price Change Badge */}
+            <>
+              {priceChange && (
+                <Badge 
+                  variant={priceChange > 0 ? 'danger' : 'sale'} 
+                  className="absolute top-4 right-4 text-sm font-bold shadow-lg"
+                >
+                  {priceChange > 0 ? 'PRICE UP' : 'SALE'} {Math.abs(priceChange).toFixed(1)}% OFF
+                </Badge>
+              )}
+            </>
             
-{/* Auto-Generated Offer Badge */}
-            {product.discountValue && product.discountValue > 0 && (
-              <Badge 
-                variant="promotional" 
-                className="absolute top-4 left-4 text-sm font-bold"
-              >
-                {product.discountType === 'Percentage' 
-                  ? `${product.discountValue}% OFF` 
-                  : `Rs. ${product.discountValue} OFF`
-                }
-              </Badge>
-            )}
+            {/* Auto-Generated Offer Badge */}
+            <>
+              {product.discountValue && product.discountValue > 0 && (
+                <Badge 
+                  variant="promotional" 
+                  className="absolute top-4 left-4 text-sm font-bold"
+                >
+                  {product.discountType === 'Percentage' 
+                    ? `${product.discountValue}% OFF` 
+                    : `Rs. ${product.discountValue} OFF`
+                  }
+                </Badge>
+              )}
+            </>
 
             {/* Special Deal Badge */}
-            {activeDeal && (
-              <Badge 
-                variant={activeDeal.color} 
-                className="absolute bottom-4 left-4 text-sm font-bold animate-pulse shadow-lg"
-              >
-                <ApperIcon name={activeDeal.icon} size={14} className="mr-1" />
-                {activeDeal.title}
-              </Badge>
-            )}
+            <>
+              {activeDeal && (
+                <Badge 
+                  variant={activeDeal.color} 
+                  className="absolute bottom-4 left-4 text-sm font-bold animate-pulse shadow-lg"
+                >
+                  <ApperIcon name={activeDeal.icon} size={14} className="mr-1" />
+                  {activeDeal.title}
+                </Badge>
+              )}
+            </>
           </div>
         </div>
 
