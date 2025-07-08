@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ApperIcon from "@/components/ApperIcon";
 import Badge from "@/components/atoms/Badge";
@@ -42,6 +43,9 @@ const Switch = ({ checked, onChange, color = "primary", disabled = false, ...pro
 };
 
 const ProductManagement = () => {
+  // Navigation hook for proper React Router integration
+  const navigate = useNavigate();
+  
   // State management with proper initialization
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -669,7 +673,7 @@ return matchesSearch && matchesCategory;
 <Button
                 variant="outline"
                 icon="Search"
-                onClick={() => window.location.href = '/admin/bulk-price-update'}
+                onClick={() => navigate('/admin/bulk-price-update')}
                 className="text-blue-600 border-blue-200 hover:bg-blue-50"
               >
                 Bulk Price Manager
