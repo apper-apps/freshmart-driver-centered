@@ -215,7 +215,7 @@ const activeDeal = getActiveDeal();
                 </div>
               </div>
 </div>
-</div>
+          </div>
             
             {/* Stock Status Badges */}
             {product.stock <= 10 && product.stock > 0 && (
@@ -235,7 +235,6 @@ const activeDeal = getActiveDeal();
                 Out of Stock
               </Badge>
             )}
-)}
             
             {/* Multiple Badge Elements - Wrapped in Fragment */}
             <>
@@ -530,7 +529,10 @@ Add to Cart - Rs. {((product.price * quantity) - calculateDealSavings(quantity))
               <div className="bg-orange-100 p-2 rounded-lg">
                 <ApperIcon name="RotateCcw" size={20} className="text-orange-600" />
               </div>
-<div>
+<div className="bg-orange-100 p-2 rounded-lg">
+                <ApperIcon name="RotateCcw" size={20} className="text-orange-600" />
+              </div>
+              <div>
                 <p className="font-medium text-gray-900">Easy Returns</p>
                 <p className="text-sm text-gray-600">Hassle-free policy</p>
               </div>
@@ -541,6 +543,8 @@ Add to Cart - Rs. {((product.price * quantity) - calculateDealSavings(quantity))
     </div>
   );
 };
+
+// Enhanced Discount Section Component with Offer Dropdown
 // Enhanced Discount Section Component with Offer Dropdown
 const DiscountSection = ({ product, quantity, onDiscountChange }) => {
   const [selectedOffer, setSelectedOffer] = useState(null);
