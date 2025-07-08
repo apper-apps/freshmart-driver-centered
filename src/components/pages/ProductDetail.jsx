@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import ApperIcon from '@/components/ApperIcon';
-import Button from '@/components/atoms/Button';
-import Badge from '@/components/atoms/Badge';
-import Loading from '@/components/ui/Loading';
-import Error from '@/components/ui/Error';
-import { productService } from '@/services/api/productService';
-import { useCart } from '@/hooks/useCart';
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useCart } from "@/hooks/useCart";
+import ApperIcon from "@/components/ApperIcon";
+import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
+import Error from "@/components/ui/Error";
+import Loading from "@/components/ui/Loading";
+import Cart from "@/components/pages/Cart";
+import { productService } from "@/services/api/productService";
 
 const ProductDetail = () => {
   const { productId } = useParams();
@@ -277,21 +278,34 @@ const activeDeal = getActiveDeal();
               {product.name}
             </h1>
           </div>
-{/* Price */}
-          <div className="space-y-2">
-            <div className="flex items-center space-x-4">
-              <span className="text-4xl font-bold gradient-text">
-                Rs. {product.price.toLocaleString()}
-              </span>
-              <span className="text-lg text-gray-500">
-                /{product.unit}
-              </span>
+{/* Enhanced Price Section with History Tracking */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <span className="text-4xl font-bold gradient-text">
+                  Rs. {product.price.toLocaleString()}
+                </span>
+                <Badge variant="success" className="text-xs font-bold animate-pulse">
+                  <ApperIcon name="Radio" size={12} className="mr-1" />
+                  LIVE
+                </Badge>
+                <span className="text-lg text-gray-500">
+                  /{product.unit}
+                </span>
+              </div>
+              <PriceHistoryButton product={product} />
             </div>
             
-{product.previousPrice && product.previousPrice !== product.price && (
+            {/* Last Updated Timestamp */}
+            <div className="flex items-center space-x-2 text-sm text-gray-500">
+              <ApperIcon name="Clock" size={14} />
+              <span>Last Updated: {new Date(product.lastUpdated || Date.now()).toLocaleDateString()} at {new Date(product.lastUpdated || Date.now()).toLocaleTimeString()}</span>
+            </div>
+            
+            {product.previousPrice && product.previousPrice !== product.price && (
               <div className="space-y-2">
                 <div className="flex items-center space-x-3">
-                  <Badge variant="strikethrough" className="text-base px-3 py-1">
+                  <Badge variant="strikethrough" className="text-base px-3 py-1 line-through">
                     Rs. {product.previousPrice.toLocaleString()}
                   </Badge>
                   <Badge 
@@ -308,6 +322,7 @@ const activeDeal = getActiveDeal();
                 </div>
               </div>
             )}
+          </div>
 
             {/* Enhanced Discount Section with Offer Dropdown */}
             <DiscountSection 
@@ -512,10 +527,10 @@ Add to Cart - Rs. {((product.price * quantity) - calculateDealSavings(quantity))
                 <p className="text-sm text-gray-600">Hassle-free policy</p>
               </div>
             </div>
-          </div>
+</div>
         </div>
       </div>
-</div>
+    </div>
   );
 };
 
@@ -934,10 +949,49 @@ const DiscountSection = ({ product, quantity, onDiscountChange }) => {
             className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors"
           >
             <ApperIcon name="RotateCcw" size={12} className="inline mr-1" />
-            Clear Offers
+Clear Offers
           </button>
         )}
       </div>
+    </div>
+  );
+};
+
+// Price History Button Component
+const PriceHistoryButton = ({ product }) => {
+  const [showHistory, setShowHistory] = useState(false);
+  
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setShowHistory(!showHistory)}
+        className="flex items-center space-x-1 text-sm text-blue-600 hover:text-blue-800 transition-colors"
+      >
+        <ApperIcon name="TrendingUp" size={16} />
+        <span>Price History</span>
+      </button>
+      
+      {showHistory && (
+        <div className="absolute top-full right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 p-4 z-10">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-600">Current Price:</span>
+              <span className="font-medium">Rs. {product.price.toLocaleString()}</span>
+            </div>
+            {product.previousPrice && (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Previous Price:</span>
+                <span className="font-medium">Rs. {product.previousPrice.toLocaleString()}</span>
+              </div>
+            )}
+            <div className="pt-2 border-t border-gray-200">
+              <p className="text-xs text-gray-500">
+                Last updated: {new Date(product.lastUpdated || Date.now()).toLocaleDateString()}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

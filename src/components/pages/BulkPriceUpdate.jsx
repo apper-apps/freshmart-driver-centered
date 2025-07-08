@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { toast } from 'react-toastify';
-import ApperIcon from '@/components/ApperIcon';
-import Button from '@/components/atoms/Button';
-import Input from '@/components/atoms/Input';
-import Badge from '@/components/atoms/Badge';
-import Loading from '@/components/ui/Loading';
-import Error from '@/components/ui/Error';
-import Empty from '@/components/ui/Empty';
-import { productService } from '@/services/api/productService';
+import React, { useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
+import ApperIcon from "@/components/ApperIcon";
+import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
+import Input from "@/components/atoms/Input";
+import Empty from "@/components/ui/Empty";
+import Error from "@/components/ui/Error";
+import Loading from "@/components/ui/Loading";
+import { productService } from "@/services/api/productService";
 
 const BulkPriceUpdate = () => {
   const [products, setProducts] = useState([]);
@@ -187,17 +187,17 @@ const BulkPriceUpdate = () => {
   }
 
   return (
-    <div className="max-w-full mx-auto p-6">
+<div className="max-w-full mx-auto p-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Bulk Price Update Interface</h1>
-          <p className="text-gray-600">Search and update product prices efficiently</p>
+          <p className="text-gray-600">Search and update product prices efficiently with partial updates</p>
         </div>
         <div className="flex items-center space-x-4 mt-4 sm:mt-0">
           <Badge variant="info" className="text-sm">
             {filteredProducts.length} products
-          </Badge>
+</Badge>
           <Button
             variant="outline"
             icon="ArrowLeft"
@@ -207,7 +207,6 @@ const BulkPriceUpdate = () => {
           </Button>
         </div>
       </div>
-
       {/* Search Bar */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
         <div className="max-w-2xl">
@@ -322,45 +321,99 @@ const BulkPriceUpdate = () => {
                         </div>
                       </td>
 
-                      {/* New Prices Column */}
+{/* Enhanced New Prices Column with Partial Updates */}
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="space-y-3">
-                          <div>
+                          <div className="relative">
                             <Input
                               label="Base Price (New)"
                               type="number"
                               step="0.01"
                               min="1"
                               value={currentPrices.basePrice}
-                              onChange={(e) => handlePriceChange(product.id, 'basePrice', e.target.value)}
+                              onChange={(e) => {
+                                const newBasePrice = e.target.value;
+                                handlePriceChange(product.id, 'basePrice', newBasePrice);
+                                // Auto-recalculate margin when base price changes
+                                if (currentPrices.costPrice > 0 && newBasePrice > 0) {
+                                  const newMargin = calculateMargin(newBasePrice, currentPrices.costPrice);
+                                  // Visual feedback for margin changes
+                                  const marginElement = document.getElementById(`margin-${product.id}`);
+                                  if (marginElement) {
+                                    marginElement.classList.add('animate-pulse');
+                                    setTimeout(() => {
+                                      marginElement.classList.remove('animate-pulse');
+                                    }, 1000);
+                                  }
+                                }
+                              }}
                               className="w-32 text-sm"
                               placeholder="0.00"
                             />
+                            {hasChanges && editingPrices[product.id]?.basePrice !== undefined && (
+                              <div className="absolute -top-1 -right-1">
+                                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                              </div>
+                            )}
                           </div>
-                          <div>
+                          <div className="relative">
                             <Input
                               label="Cost Price (New)"
                               type="number"
                               step="0.01"
                               min="0"
                               value={currentPrices.costPrice}
-                              onChange={(e) => handlePriceChange(product.id, 'costPrice', e.target.value)}
+                              onChange={(e) => {
+                                const newCostPrice = e.target.value;
+                                handlePriceChange(product.id, 'costPrice', newCostPrice);
+                                // Auto-recalculate margin when cost price changes
+                                if (currentPrices.basePrice > 0 && newCostPrice > 0) {
+                                  const newMargin = calculateMargin(currentPrices.basePrice, newCostPrice);
+                                  // Visual feedback for margin changes
+                                  const marginElement = document.getElementById(`margin-${product.id}`);
+                                  if (marginElement) {
+                                    marginElement.classList.add('animate-pulse');
+                                    setTimeout(() => {
+                                      marginElement.classList.remove('animate-pulse');
+                                    }, 1000);
+                                  }
+                                }
+                              }}
                               className="w-32 text-sm"
                               placeholder="0.00"
                             />
+                            {hasChanges && editingPrices[product.id]?.costPrice !== undefined && (
+                              <div className="absolute -top-1 -right-1">
+                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                              </div>
+                            )}
                           </div>
                           <div className="text-sm">
-                            <span className="text-gray-600">Margin (New):</span>
+                            <span className="text-gray-600">Margin (Auto):</span>
                             <Badge 
+                              id={`margin-${product.id}`}
                               variant={
                                 currentMargin > 20 ? "success" : 
                                 currentMargin > 10 ? "warning" : "error"
                               }
-                              className="ml-2 text-xs"
+                              className="ml-2 text-xs transition-all duration-300"
                             >
                               {currentMargin.toFixed(1)}%
                             </Badge>
+                            {hasChanges && (
+                              <div className="mt-1 text-xs text-blue-600">
+                                <ApperIcon name="Calculator" size={12} className="inline mr-1" />
+                                Auto-calculated
+                              </div>
+                            )}
                           </div>
+                          {/* Price Validation Feedback */}
+                          {currentPrices.basePrice > 0 && currentPrices.costPrice > 0 && currentPrices.basePrice <= currentPrices.costPrice && (
+                            <div className="text-xs text-red-600 flex items-center space-x-1">
+                              <ApperIcon name="AlertTriangle" size={12} />
+                              <span>Base price must be higher than cost</span>
+                            </div>
+                          )}
                         </div>
                       </td>
 
@@ -393,7 +446,7 @@ const BulkPriceUpdate = () => {
                       </td>
                     </tr>
                   );
-                })}
+})}
               </tbody>
             </table>
           )}

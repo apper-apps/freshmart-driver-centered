@@ -107,17 +107,38 @@ async update(id, productData) {
       }
     }
 
-    // If only updating price, preserve the previous price for history
-    if (productData.price !== undefined && productData.price !== this.products[index].price) {
-      productData.previousPrice = this.products[index].price;
+// Enhanced price update tracking with timestamps and history
+    const currentProduct = this.products[index];
+    if (productData.price !== undefined && productData.price !== currentProduct.price) {
+      productData.previousPrice = currentProduct.price;
+      productData.lastUpdated = new Date().toISOString();
+      
+      // Add to price history
+      if (!currentProduct.priceHistory) {
+        currentProduct.priceHistory = [];
+      }
+      currentProduct.priceHistory.push({
+        date: new Date().toISOString(),
+        oldPrice: currentProduct.price,
+        newPrice: productData.price,
+        user: 'Admin',
+        reason: 'Manual update'
+      });
+      productData.priceHistory = currentProduct.priceHistory;
     }
 
-    // Preserve existing ID
+    // Preserve existing ID and calculate margins
     const updatedProduct = { 
       ...this.products[index], 
       ...productData, 
       id: this.products[index].id 
     };
+    
+    // Auto-calculate profit margin if both prices are available
+    if (updatedProduct.price && updatedProduct.purchasePrice) {
+      const margin = ((updatedProduct.price - updatedProduct.purchasePrice) / updatedProduct.purchasePrice) * 100;
+      updatedProduct.profitMargin = Math.round(margin * 100) / 100;
+    }
     
     this.products[index] = updatedProduct;
     return { ...updatedProduct };
@@ -1347,8 +1368,94 @@ width = targetHeight * aspectRatio;
     return {
       x: Math.max(0, mainRegion.x - 50),
       y: Math.max(0, mainRegion.y - 50),
-      width: Math.min(targetDimensions.width, mainRegion.width + 100),
+width: Math.min(targetDimensions.width, mainRegion.width + 100),
       height: Math.min(targetDimensions.height, mainRegion.height + 100)
+    };
+  }
+
+  // Get price history for a product
+  async getPriceHistory(productId) {
+    await this.delay(300);
+    const product = this.products.find(p => p.id === parseInt(productId));
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    // Return existing price history or generate mock history
+    if (product.priceHistory && product.priceHistory.length > 0) {
+      return product.priceHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
+
+    // Generate mock price history if none exists
+    const mockHistory = [];
+    if (product.previousPrice && product.previousPrice !== product.price) {
+      mockHistory.push({
+        date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+        oldPrice: product.previousPrice,
+        newPrice: product.price,
+        user: 'Admin',
+        reason: 'Price adjustment'
+      });
+    }
+
+    // Add some additional mock entries for demonstration
+    if (product.price > 100) {
+      mockHistory.push({
+        date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week ago
+        oldPrice: product.price * 0.9,
+        newPrice: product.previousPrice || product.price,
+        user: 'System',
+        reason: 'Seasonal adjustment'
+      });
+    }
+
+    return mockHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+  }
+
+  // Enhanced bulk price update with partial updates support
+  async bulkPartialUpdate(updates) {
+    await this.delay(800);
+    
+    let successCount = 0;
+    const errors = [];
+
+    for (const update of updates) {
+      try {
+        const { productId, basePrice, costPrice } = update;
+        const updateData = {};
+
+        // Only update fields that are provided
+        if (basePrice !== undefined && basePrice !== null) {
+          updateData.price = parseFloat(basePrice);
+        }
+        
+        if (costPrice !== undefined && costPrice !== null) {
+          updateData.purchasePrice = parseFloat(costPrice);
+        }
+
+        // Validate the update
+        if (updateData.price <= 0) {
+          errors.push({ productId, error: 'Base price must be greater than 0' });
+          continue;
+        }
+
+        if (updateData.purchasePrice !== undefined && updateData.price <= updateData.purchasePrice) {
+          errors.push({ productId, error: 'Base price must be greater than cost price' });
+          continue;
+        }
+
+        await this.update(productId, updateData);
+        successCount++;
+
+      } catch (error) {
+        errors.push({ productId: update.productId, error: error.message });
+      }
+    }
+
+    return {
+      successCount,
+      totalUpdates: updates.length,
+      errors
     };
   }
 }

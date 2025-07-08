@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const Badge = ({ 
   variant = 'default', 
@@ -21,18 +21,13 @@ const variants = {
     strikethrough: 'bg-gray-200 text-gray-500 line-through'
   };
 
-  const sizes = {
+const sizes = {
     small: 'px-2 py-0.5 text-xs',
     medium: 'px-2.5 py-1 text-sm',
     large: 'px-3 py-1.5 text-base'
   };
 
-  const classes = `
-    inline-flex items-center font-medium rounded-full
-    ${variants[variant]}
-    ${sizes[size]}
-    ${className}
-  `.trim();
+  const classes = `${variants[variant] || variants.default} ${sizes[size] || sizes.medium} rounded-full font-medium inline-flex items-center justify-center ${className}`;
 
   return (
     <span className={classes}>
