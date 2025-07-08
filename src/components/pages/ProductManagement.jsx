@@ -673,7 +673,7 @@ return matchesSearch && matchesCategory;
 <Button
                 variant="outline"
                 icon="Search"
-                onClick={() => navigate('/admin/bulk-price-update')}
+                onClick={() => navigate('/admin/bulk-price-manager')}
                 className="text-blue-600 border-blue-200 hover:bg-blue-50"
               >
                 Bulk Price Manager
