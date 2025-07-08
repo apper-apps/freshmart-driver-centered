@@ -235,47 +235,43 @@ return (
                 >
                   Out of Stock
                 </Badge>
+)}
+              
+              {/* Price Change Badge */}
+              {priceChange && (
+                <Badge 
+                  variant={priceChange > 0 ? 'danger' : 'sale'} 
+                  className="absolute top-4 right-4 text-sm font-bold shadow-lg"
+                >
+                  {priceChange > 0 ? 'PRICE UP' : 'SALE'} {Math.abs(priceChange).toFixed(1)}% OFF
+                </Badge>
               )}
               
-              {/* Multiple Badge Elements - Wrapped in Fragment */}
-              <>
-                {/* Price Change Badge */}
-                {priceChange && (
-                  <Badge 
-                    variant={priceChange > 0 ? 'danger' : 'sale'} 
-                    className="absolute top-4 right-4 text-sm font-bold shadow-lg"
-                  >
-                    {priceChange > 0 ? 'PRICE UP' : 'SALE'} {Math.abs(priceChange).toFixed(1)}% OFF
-                  </Badge>
-                )}
-                
-                {/* Auto-Generated Offer Badge */}
-                {product.discountValue && product.discountValue > 0 && (
-                  <Badge 
-                    variant="promotional" 
-                    className="absolute top-4 left-4 text-sm font-bold"
-                  >
-                    {product.discountType === 'Percentage' 
-                      ? `${product.discountValue}% OFF` 
-                      : `Rs. ${product.discountValue} OFF`
-                    }
-                  </Badge>
-                )}
+              {/* Auto-Generated Offer Badge */}
+              {product.discountValue && product.discountValue > 0 && (
+                <Badge 
+                  variant="promotional" 
+                  className="absolute top-4 left-4 text-sm font-bold"
+                >
+                  {product.discountType === 'Percentage' 
+                    ? `${product.discountValue}% OFF` 
+                    : `Rs. ${product.discountValue} OFF`
+                  }
+                </Badge>
+              )}
 
-                {/* Special Deal Badge */}
-                {activeDeal && (
-                  <Badge 
-                    variant={activeDeal.color} 
-                    className="absolute bottom-4 left-4 text-sm font-bold animate-pulse shadow-lg"
-                  >
-                    <ApperIcon name={activeDeal.icon} size={14} className="mr-1" />
-                    {activeDeal.title}
-                  </Badge>
-                )}
-              </>
+              {/* Special Deal Badge */}
+              {activeDeal && (
+                <Badge 
+                  variant={activeDeal.color} 
+                  className="absolute bottom-4 left-4 text-sm font-bold animate-pulse shadow-lg"
+                >
+                  <ApperIcon name={activeDeal.icon} size={14} className="mr-1" />
+                  {activeDeal.title}
+                </Badge>
+              )}
             </div>
           </div>
-
           {/* Product Details */}
           <div className="space-y-6">
             <div>
@@ -536,14 +532,13 @@ return (
                   <p className="text-sm text-gray-600">Hassle-free policy</p>
                 </div>
               </div>
-            </div>
 </div>
+          </div>
         </div>
       </div>
     </>
   );
 };
-
 // Enhanced Discount Section Component with Offer Dropdown
 // Enhanced Discount Section Component with Offer Dropdown
 const DiscountSection = ({ product, quantity, onDiscountChange }) => {
